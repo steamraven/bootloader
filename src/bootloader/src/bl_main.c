@@ -173,6 +173,14 @@ bool is_direct_boot(void)
     return (~configurationData->bootFlags) & kBootFlag_DirectBoot;
 }
 
+bool is_boot_pin_enabled(void)
+{
+    bootloader_configuration_data_t *configurationData =
+        &g_bootloaderContext.propertyInterface->store->configurationData;
+
+    return (~configurationData->bootFlags) & kBootFlag_BootPinEnabled;
+}
+
 bool is_boot_sw_disabled(void)
 {
     bootloader_configuration_data_t *configurationData =
@@ -326,12 +334,13 @@ static peripheral_descriptor_t const *get_active_peripheral(void)
     get_user_application_entry(&applicationAddress, &stackPointer);
 
     // If the boot to rom option is not set AND there is a valid jump application determine the timeout value
-    if (!is_boot_pin_asserted() && is_application_ready_for_executing(applicationAddress))
+    if (!(is_boot_pin_enabled() && is_boot_pin_asserted()) && is_application_ready_for_executing(applicationAddress))
     {
         if (is_direct_boot())
         {
 	        if ( !(
-                (RCM->SRS0 & RCM_SRS0_PIN_MASK)
+                (RCM->SRS0 & RCM_SRS0_PIN_MASK
+                   && !is_boot_pin_enabled())
                 || (RCM->SRS1 & RCM_SRS1_SW_MASK
                     && IS_WORMHOLE_OPEN 
                     && Wormhole.enumerationMode == EnumerationMode_Bootloader

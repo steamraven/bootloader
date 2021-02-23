@@ -44,13 +44,15 @@
 #define BOOT_PIN_PORT PORTC
 #define BOOT_PIN_GPIO GPIOC
 #define BOOT_PIN_ALT_MODE 1
+#define BOOT_PIN_SENSE 0
 #endif
 
 #ifdef FREEDOM
-#define BOOT_PIN_NUMBER 17
-#define BOOT_PIN_PORT PORTB
-#define BOOT_PIN_GPIO GPIOB
+#define BOOT_PIN_NUMBER 3
+#define BOOT_PIN_PORT PORTA
+#define BOOT_PIN_GPIO GPIOA
 #define BOOT_PIN_ALT_MODE 1
+#define BOOT_PIN_SENSE 1
 #endif
 
 #define BOOT_PIN_DEBOUNCE_READ_COUNT 500
@@ -138,15 +140,22 @@ uint32_t get_uart_clock(uint32_t instance)
 
 bool is_boot_pin_asserted(void)
 {
-    return false;
 #ifdef BL_TARGET_FLASH
     // Initialize boot pin for GPIO
     BOOT_PIN_PORT->PCR[BOOT_PIN_NUMBER] |= PORT_PCR_MUX(BOOT_PIN_ALT_MODE);
 
     // Set boot pin as an input
     BOOT_PIN_GPIO->PDDR &= (uint32_t) ~(1 << BOOT_PIN_NUMBER);
-    // Set boot pin pullup enabled, pullup select, filter enable
-    BOOT_PIN_PORT->PCR[BOOT_PIN_NUMBER] |= (PORT_PCR_PE_MASK | PORT_PCR_PS_MASK | PORT_PCR_PFE_MASK);
+    // Set boot pin pullup/pulldown enabled, filter enable
+    BOOT_PIN_PORT->PCR[BOOT_PIN_NUMBER] |= (PORT_PCR_PE_MASK | PORT_PCR_PFE_MASK);
+    
+    #if BOOT_PIN_SENSE {
+        // Set boot pin pulldown select
+        BOOT_PIN_PORT->PCR[BOOT_PIN_NUMBER] &= ~PORT_PCR_PS_MASK;
+    #else
+    // Set boot pin pullup select
+        BOOT_PIN_PORT->PCR[BOOT_PIN_NUMBER] |= PORT_PCR_PS_MASK;
+    #endif
 
     uint32_t readCount = 0;
 
@@ -156,9 +165,15 @@ bool is_boot_pin_asserted(void)
         readCount += ((BOOT_PIN_GPIO->PDIR) >> BOOT_PIN_NUMBER) & 1;
     }
 
-    // boot pin is pulled high so we are measuring lows, make sure most of our measurements
-    // registered as low
-    return (readCount < (BOOT_PIN_DEBOUNCE_READ_COUNT / 2));
+    #if BOOT_PIN_SENSE 
+        // boot pin is pulled low so we are measuring highs, make sure most of our measurements
+        // registered as high
+        return (readCount > (BOOT_PIN_DEBOUNCE_READ_COUNT / 2));
+    #else 
+        // boot pin is pulled high so we are measuring lows, make sure most of our measurements
+        // registered as low
+        return (readCount < (BOOT_PIN_DEBOUNCE_READ_COUNT / 2));
+    #endif 
 #else
     // Boot pin for Flash only target
     return false;

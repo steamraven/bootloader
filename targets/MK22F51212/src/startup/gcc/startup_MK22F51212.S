@@ -313,6 +313,7 @@ __isr_vector:
         .byte     0xFF			// [1e] Boot flags 1's complement. 
                                 //      0x01 -  direct boot
                                 //      0x02 - Disable SW boot to bootlader
+                                //      0x04 - Enable boot pin
         .byte 	  0xFF          // [1f] reserved
         // Fill to align with flash configuration field.
         .long     0xFFFFFFFF
