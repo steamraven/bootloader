@@ -322,7 +322,13 @@ static peripheral_descriptor_t const *get_active_peripheral(void)
     {
         if (is_direct_boot())
         {
-	        if (RCM->SRS0 & RCM_SRS0_POR_MASK || (IS_WORMHOLE_OPEN && Wormhole.enumerationMode != EnumerationMode_Bootloader)) {
+	        if ( !(
+                (RCM->SRS0 & RCM_SRS0_PIN_MASK)
+                || (RCM->SRS1 & RCM_SRS1_SW_MASK
+                    && IS_WORMHOLE_OPEN 
+                    && Wormhole.enumerationMode == EnumerationMode_Bootloader
+                )
+            )) {
 	        	jump_to_application(applicationAddress, stackPointer);
 	        }
         }
