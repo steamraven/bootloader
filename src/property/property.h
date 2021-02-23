@@ -175,6 +175,7 @@ enum _clock_flags
 enum _boot_flags
 {
     kBootFlag_DirectBoot = (1 << 0)
+    kBootFlag_BootSwDisabled = (1 << 1),
 };
 
 #if !defined(BOOTLOADER_HOST)

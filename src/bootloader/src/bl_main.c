@@ -172,6 +172,14 @@ bool is_direct_boot(void)
 
     return (~configurationData->bootFlags) & kBootFlag_DirectBoot;
 }
+
+bool is_boot_sw_disabled(void)
+{
+    bootloader_configuration_data_t *configurationData =
+        &g_bootloaderContext.propertyInterface->store->configurationData;
+
+    return (~configurationData->bootFlags) & kBootFlag_BootSwDisabled;
+}
 #endif // !BL_FEATURE_TIMEOUT
 
 #if !BL_FEATURE_TIMEOUT
@@ -327,6 +335,7 @@ static peripheral_descriptor_t const *get_active_peripheral(void)
                 || (RCM->SRS1 & RCM_SRS1_SW_MASK
                     && IS_WORMHOLE_OPEN 
                     && Wormhole.enumerationMode == EnumerationMode_Bootloader
+                    && !is_boot_sw_disabled()
                 )
             )) {
 	        	jump_to_application(applicationAddress, stackPointer);

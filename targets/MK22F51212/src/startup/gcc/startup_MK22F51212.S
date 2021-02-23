@@ -312,6 +312,7 @@ __isr_vector:
         .byte     0xFF          // [1d:1d] clockDivider - One's complement of clock divider, zero divider is divide by 1
         .byte     0xFF			// [1e] Boot flags 1's complement. 
                                 //      0x01 -  direct boot
+                                //      0x02 - Disable SW boot to bootlader
         .byte 	  0xFF          // [1f] reserved
         // Fill to align with flash configuration field.
         .long     0xFFFFFFFF
