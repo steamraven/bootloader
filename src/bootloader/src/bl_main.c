@@ -310,7 +310,7 @@ static peripheral_descriptor_t const *get_active_peripheral(void)
 
 #if !BL_FEATURE_TIMEOUT
     uint64_t lastTicks = 0;    // Value of our last recorded ticks second marker
-    uint64_t timeoutTicks = 120000000; // SGF Add timeout to make the bootloader Jump to application after some time. 0 means no timeout.
+    uint64_t timeoutTicks = 0; // SGF Add timeout to make the bootloader Jump to application after some time. 0 means no timeout.
     const uint64_t ticksPerMillisecond = microseconds_convert_to_ticks(1000);
 
     // Get the user application entry point and stack pointer.
