@@ -310,7 +310,8 @@ __isr_vector:
         .long     0xFFFFFFFF    // [18:1b] usbStringsPointer
         .byte     0x00          // [1c:1c] clockFlags - High Speed and other clock options /* SGF Set to 0 to enable 48 MHz CLK and USB HID */
         .byte     0xFF          // [1d:1d] clockDivider - One's complement of clock divider, zero divider is divide by 1
-        .byte     0xFF			// [1e] SGF Direct boot in 1's complement. FE means direct boot enabled.
+        .byte     0xFF			// [1e] Boot flags 1's complement. 
+                                //      0x01 -  direct boot
         .byte 	  0xFF          // [1f] reserved
         // Fill to align with flash configuration field.
         .long     0xFFFFFFFF

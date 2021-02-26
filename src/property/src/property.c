@@ -145,7 +145,6 @@ status_t bootloader_property_load_user_config(void)
 	  config->peripheralDetectionTimeoutMs = 5000;
 	  config->clockFlags = 0x00;
 	  config->clockDivider = 0xFF;
-	  config->bootFlags = 0xFE;
   
     // Update available peripherals based on specific chips
     update_available_peripherals();
