@@ -177,6 +177,7 @@ enum _boot_flags
     kBootFlag_DirectBoot = (1 << 0)
     kBootFlag_BootSwDisabled = (1 << 1),
     kBootFlag_BootPinEnabled = (1 << 2),
+    kBootFlag_BootFlashProtDisabled = (1<<3),
 };
 
 #if !defined(BOOTLOADER_HOST)

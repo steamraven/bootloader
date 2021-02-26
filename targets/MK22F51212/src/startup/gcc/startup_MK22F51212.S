@@ -314,6 +314,7 @@ __isr_vector:
                                 //      0x01 -  direct boot
                                 //      0x02 - Disable SW boot to bootlader
                                 //      0x04 - Enable boot pin
+                                //      0x08 - Disable Flash Protection
         .byte 	  0xFF          // [1f] reserved
         // Fill to align with flash configuration field.
         .long     0xFFFFFFFF

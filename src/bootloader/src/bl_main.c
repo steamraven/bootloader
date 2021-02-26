@@ -188,6 +188,14 @@ bool is_boot_sw_disabled(void)
 
     return (~configurationData->bootFlags) & kBootFlag_BootSwDisabled;
 }
+
+bool is_boot_flash_protoection_enables(void)
+{
+    bootloader_configuration_data_t *configurationData =
+        &g_bootloaderContext.propertyInterface->store->configurationData;
+
+    return !(~configurationData->bootFlags) & kBootFlag_BootFlashProtDisabled);
+}
 #endif // !BL_FEATURE_TIMEOUT
 
 #if !BL_FEATURE_TIMEOUT
@@ -198,7 +206,9 @@ static void jump_to_application(uint32_t applicationAddress, uint32_t stackPoint
     quadspi_cache_clear();
     oftfad_resume_as_needed();
 #endif
-
+    if is_boot_flash_protection_enabled() {
+        enable_flash_protection();
+    }
     shutdown_cleanup(kShutdownType_Shutdown);
 
     // Create the function call to the user application.
